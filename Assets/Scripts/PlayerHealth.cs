@@ -16,13 +16,13 @@ public class PlayerHealth : MonoBehaviour
 
     public void RecibirDano(float cantidad)
     {
+        Debug.Log("Recibiendo daño: " + cantidad);
         vidaActual -= cantidad;
         ActualizarUI();
 
         if (vidaActual <= 0)
         {
-            Debug.Log("Game Over");
-            // aqui agregaremos la pantalla de game over despues
+            GameManager.instancia.GameOver();
         }
     }
 

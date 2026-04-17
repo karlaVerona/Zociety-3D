@@ -20,23 +20,38 @@ public class FPSShooter : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI textoMunicion;
 
+    [Header("Audio")]
+    public AudioClip sonidoDisparo;
+    private AudioSource audioSource;
+
     void Start()
     {
         cam = GetComponentInChildren<Camera>();
         municionActual = municionMax;
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
+        if (Time.timeScale == 0) return; // no hacer nada si el juego esta pausado
+
         if (Input.GetButton("Fire1") && Time.time >= nextFireTime && municionActual > 0)
         {
             Disparar();
             nextFireTime = Time.time + fireRate;
         }
+
+        if (Input.GetKeyDown(KeyCode.R) && municionActual < municionMax)
+        {
+            Recargar();
+        }
     }
 
 void Disparar()
 {
+    if (sonidoDisparo != null)
+        audioSource.PlayOneShot(sonidoDisparo);
+    
     municionActual--;
 
     RaycastHit hit;
@@ -55,4 +70,12 @@ void Disparar()
     if (textoMunicion != null)
     textoMunicion.text = "Munición: " + municionActual;
 }
+
+void Recargar()
+{
+    municionActual = municionMax;
+    if (textoMunicion != null)
+        textoMunicion.text = "Munición: " + municionActual;
+    Debug.Log("Recargando...");
+    }
 }
