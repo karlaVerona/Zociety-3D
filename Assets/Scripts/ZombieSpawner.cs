@@ -9,24 +9,40 @@ public class ZombieSpawner : MonoBehaviour
     private float siguienteSpawn = 0f;
     private int zombiesCreados = 0;
 
-    void Update()
+    private bool activo = false;
+    public bool iniciarActivo = true;
+
+void Start()
+{
+    activo = iniciarActivo;
+}
+
+void Update()
+{
+    if (!activo) return;
+    
+    if (zombiesCreados < totalZombies && Time.time >= siguienteSpawn)
     {
-        if (zombiesCreados < totalZombies && Time.time >= siguienteSpawn)
-        {
-            SpawnZombie();
-            siguienteSpawn = Time.time + tiempoEntreSpawns;
-        }
+        SpawnZombie();
+        siguienteSpawn = Time.time + tiempoEntreSpawns;
     }
+}
+
+public void Activar()
+{
+     Debug.Log("Spawner activado");
+    activo = true;
+}
 
     void SpawnZombie()
-    {
-        Vector3 posicion = new Vector3(
-            transform.position.x + Random.Range(-3f, 3f),
-            transform.position.y,
-            transform.position.z + Random.Range(-3f, 3f)
-        );
-
-        Instantiate(zombiePrefab, posicion, Quaternion.identity);
-        zombiesCreados++;
-    }
+{
+    Vector3 posicion = new Vector3(
+        transform.position.x + Random.Range(-3f, 3f),
+        transform.position.y + Random.Range(0f, 2f),
+        transform.position.z + Random.Range(-3f, 3f)
+    );
+    Debug.Log("Spawneando zombie en: " + posicion);
+    Instantiate(zombiePrefab, posicion, Quaternion.identity);
+    zombiesCreados++;
+}
 }
