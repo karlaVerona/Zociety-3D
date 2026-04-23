@@ -18,29 +18,37 @@ public class ZombieAI : MonoBehaviour
     private float timerGruñido = 0f;
     private Animator anim;
 
-    void Start()
+ void Start()
+{
+    agent = GetComponent<NavMeshAgent>();
+    anim = GetComponentInChildren<Animator>();
+    audioSource = GetComponent<AudioSource>();
+    
+    GameObject player = GameObject.FindGameObjectWithTag("Player");
+    if (player != null)
     {
-        audioSource = GetComponent<AudioSource>();
-        agent = GetComponent<NavMeshAgent>();
-        anim = GetComponentInChildren<Animator>();
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            jugador = player.transform;
+        jugador = player.transform;
     }
+    else
+    {
+        Debug.Log("Jugador NO encontrado");
+    }
+}
 
     void Update()
     {
-        if (jugador == null) return;
-        agent.SetDestination(jugador.position);
+    if (jugador == null) return;
+    
+    agent.SetDestination(jugador.position);
 
-        // Animacion caminar
-        if (anim != null)
-        {
-            if (agent.velocity.magnitude > 0.1f)
-                anim.SetBool("estaCaminando", true);
-            else
-                anim.SetBool("estaCaminando", false);
-        }
+    if (anim != null)
+{
+    //Debug.Log("Velocidad: " + agent.velocity.magnitude);
+    if (agent.velocity.magnitude > 0.1f)
+        anim.SetBool("estaCaminando", true);
+    else
+        anim.SetBool("estaCaminando", false);
+}
 
         // Gruñido cada 10 segundos
         timerGruñido -= Time.deltaTime;

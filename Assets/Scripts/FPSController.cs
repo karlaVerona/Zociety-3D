@@ -68,4 +68,6 @@ void Rotar()
     cameraHolder.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
     transform.Rotate(Vector3.up * rotY);
 }
+
+
 }
