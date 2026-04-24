@@ -10,7 +10,8 @@ public class FPSController : MonoBehaviour
 
     [Header("Camara")]
     public Transform cameraHolder;
-    public float sensibilidad = 2f;
+    public float sensibilidadMouse = 1.5f;
+    public float sensibilidadFlechas = 2f;
     public float limiteVertical = 80f;
 
     private CharacterController cc;
@@ -21,8 +22,8 @@ public class FPSController : MonoBehaviour
     void Start()
     {
         cc = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -52,22 +53,29 @@ public class FPSController : MonoBehaviour
         cc.Move(velocidadVertical * Time.deltaTime);
     }
 
-void Rotar()
-{
-    float rotY = 0f;
-    float rotX = 0f;
+    void Rotar()
+    {
+        // Input del mouse
+        float mouseX = Input.GetAxis("Mouse X") * sensibilidadMouse;
+        float mouseY = Input.GetAxis("Mouse Y") * sensibilidadMouse;
 
-    if (Input.GetKey(KeyCode.RightArrow)) rotY += sensibilidad * 2f;
-    if (Input.GetKey(KeyCode.LeftArrow)) rotY -= sensibilidad * 2f;
-    if (Input.GetKey(KeyCode.UpArrow)) rotX -= sensibilidad * 2f;
-    if (Input.GetKey(KeyCode.DownArrow)) rotX += sensibilidad * 2f;
+        // Input de flechas
+        float flechaX = 0f;
+        float flechaY = 0f;
 
-    rotacionX += rotX;
-    rotacionX = Mathf.Clamp(rotacionX, -limiteVertical, limiteVertical);
+        if (Input.GetKey(KeyCode.RightArrow)) flechaX += sensibilidadFlechas * 2f;
+        if (Input.GetKey(KeyCode.LeftArrow)) flechaX -= sensibilidadFlechas * 2f;
+        if (Input.GetKey(KeyCode.UpArrow)) flechaY += sensibilidadFlechas * 2f;
+        if (Input.GetKey(KeyCode.DownArrow)) flechaY -= sensibilidadFlechas * 2f;
 
-    cameraHolder.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
-    transform.Rotate(Vector3.up * rotY);
-}
+        // Combinar ambos inputs
+        float rotY = mouseX + flechaX;
+        float rotX = -mouseY - flechaY;
 
+        rotacionX += rotX;
+        rotacionX = Mathf.Clamp(rotacionX, -limiteVertical, limiteVertical);
 
+        cameraHolder.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
+        transform.Rotate(Vector3.up * rotY);
+    }
 }
