@@ -106,6 +106,8 @@ GameObject:
   - component: {fileID: 2124413560300223402}
   - component: {fileID: 7753523818297618092}
   - component: {fileID: 3609945204125989374}
+  - component: {fileID: 3959200512997471819}
+  - component: {fileID: 597992569686168463}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -171,7 +173,8 @@ MonoBehaviour:
   fuerzaSalto: 5
   gravedad: -20
   cameraHolder: {fileID: 5968202962227071361}
-  sensibilidad: 2
+  sensibilidadMouse: 1.5
+  sensibilidadFlechas: 2
   limiteVertical: 80
 --- !u!114 &2124413560300223402
 MonoBehaviour:
@@ -190,10 +193,15 @@ MonoBehaviour:
   fireRate: 0.3
   municionMax: 30
   municionActual: 0
+  velocidadProyectil: 80
+  tiempoVidaProyectil: 3
+  offsetMano: {x: 0.3, y: -0.2, z: 0.5}
   muzzleFlash: {fileID: 0}
   impactoEfecto: {fileID: 0}
+  "tama\xF1oCrosshair": 4
+  grosorCrosshair: 2
+  colorCrosshair: {r: 1, g: 1, b: 1, a: 1}
   textoMunicion: {fileID: 0}
-  sonidoDisparo: {fileID: 8300000, guid: efb90dbb0341cc547bd02826b92a2b54, type: 3}
 --- !u!114 &7753523818297618092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +314,36 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3959200512997471819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6953074586367241186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f812fd9a7c939648b99e201fdab31f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TriggerDialogo
+  iniciarAutomatico: 1
+  retrasoInicio: 0.5
+--- !u!114 &597992569686168463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6953074586367241186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e87c1740f2ea041ad8b42d2fb5c37b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SistemaDialogos
+  panelDialogo: {fileID: 0}
+  textoDialogo: {fileID: 0}
+  velocidadTexto: 0.04
+  mensajes: []
 --- !u!1 &8494503888640284090
 GameObject:
   m_ObjectHideFlags: 0
