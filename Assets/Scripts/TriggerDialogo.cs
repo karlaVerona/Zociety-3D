@@ -3,6 +3,7 @@ using UnityEngine;
 public class TriggerDialogo : MonoBehaviour
 {
     private SistemaDialogos sistema;
+    private bool yaActivado = false;
 
     [Header("Activación")]
     public bool iniciarAutomatico = true;
@@ -25,8 +26,9 @@ public class TriggerDialogo : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!iniciarAutomatico && other.CompareTag("Player"))
+        if (!iniciarAutomatico && other.CompareTag("Player") && !yaActivado)
         {
+            yaActivado = true;
             sistema.IniciarDialogo();
         }
     }

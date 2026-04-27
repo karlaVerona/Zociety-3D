@@ -10,10 +10,14 @@ public class FPSShooter : MonoBehaviour
     public int municionMax = 30;
     public int municionActual;
 
+    [Header("Recarga")]
+    public float tiempoRecarga = 2f;
+    private bool recargando = false;
+
     [Header("Proyectil")]
     public float velocidadProyectil = 80f;
     public float tiempoVidaProyectil = 3f;
-    public Vector3 offsetMano = new Vector3(0.3f, -0.2f, 0.5f); // offset mano derecha
+    public Vector3 offsetMano = new Vector3(0.3f, -0.2f, 0.5f);
 
     [Header("Efectos")]
     public ParticleSystem muzzleFlash;
@@ -40,11 +44,40 @@ public class FPSShooter : MonoBehaviour
 
     void Update()
     {
+        if (recargando) return;
+
+        if (Input.GetKeyDown(KeyCode.R) && municionActual < municionMax)
+        {
+            StartCoroutine(Recargar());
+            return;
+        }
+
         if (Input.GetButton("Fire1") && Time.time >= nextFireTime && municionActual > 0)
         {
             Disparar();
             nextFireTime = Time.time + fireRate;
         }
+
+        if (municionActual <= 0)
+        {
+            StartCoroutine(Recargar());
+        }
+    }
+
+    System.Collections.IEnumerator Recargar()
+    {
+        recargando = true;
+
+        if (textoMunicion != null)
+            textoMunicion.text = "Recargando...";
+
+        yield return new WaitForSeconds(tiempoRecarga);
+
+        municionActual = municionMax;
+        recargando = false;
+
+        if (textoMunicion != null)
+            textoMunicion.text = "Munición: " + municionActual;
     }
 
     void Disparar()
@@ -54,10 +87,8 @@ public class FPSShooter : MonoBehaviour
         if (muzzleFlash != null)
             muzzleFlash.Play();
 
-        // Crear proyectil visible
         CrearProyectil();
 
-        // Raycast para daño instantáneo
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, alcance))
         {
@@ -80,7 +111,6 @@ public class FPSShooter : MonoBehaviour
 
     void CrearProyectil()
     {
-     // Calcular punto de destino con raycast desde el centro de la cámara
         Vector3 puntoDestino;
         RaycastHit hitInfo;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hitInfo, alcance))
@@ -92,16 +122,13 @@ public class FPSShooter : MonoBehaviour
             puntoDestino = cam.transform.position + cam.transform.forward * alcance;
         }
 
-        // Posición de origen: mano derecha del jugador
         Vector3 origenProyectil = cam.transform.position
             + cam.transform.right * offsetMano.x
             + cam.transform.up * offsetMano.y
             + cam.transform.forward * offsetMano.z;
 
-        // Dirección desde la mano hacia el punto de mira
         Vector3 direccion = (puntoDestino - origenProyectil).normalized;
 
-        // Crear proyectil visual
         GameObject proyectil = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         proyectil.name = "Proyectil";
         proyectil.transform.localScale = Vector3.one * 0.1f;
@@ -123,7 +150,7 @@ public class FPSShooter : MonoBehaviour
         rb.linearVelocity = direccion * velocidadProyectil;
 
         Destroy(proyectil, tiempoVidaProyectil);
-    }   
+    }
 
     void CrearCrosshairTexture()
     {
@@ -131,7 +158,6 @@ public class FPSShooter : MonoBehaviour
         crosshairTexture = new Texture2D(size, size, TextureFormat.RGBA32, false);
         crosshairTexture.filterMode = FilterMode.Point;
 
-        // Fondo transparente
         Color transparente = new Color(0, 0, 0, 0);
         for (int x = 0; x < size; x++)
             for (int y = 0; y < size; y++)
@@ -140,20 +166,15 @@ public class FPSShooter : MonoBehaviour
         int centro = size / 2;
         int largo = (int)tamañoCrosshair;
         int grosor = Mathf.Max(1, (int)(grosorCrosshair / 2f));
-        int gap = 2; // espacio en el centro
+        int gap = 2;
 
-        // Líneas del crosshair (arriba, abajo, izquierda, derecha)
         for (int i = gap; i <= largo + gap; i++)
         {
             for (int g = -grosor; g <= grosor; g++)
             {
-                // Arriba
                 if (centro + i < size) crosshairTexture.SetPixel(centro + g, centro + i, colorCrosshair);
-                // Abajo
                 if (centro - i >= 0) crosshairTexture.SetPixel(centro + g, centro - i, colorCrosshair);
-                // Derecha
                 if (centro + i < size) crosshairTexture.SetPixel(centro + i, centro + g, colorCrosshair);
-                // Izquierda
                 if (centro - i >= 0) crosshairTexture.SetPixel(centro - i, centro + g, colorCrosshair);
             }
         }
