@@ -5,7 +5,6 @@ public class MenuPrincipal : MonoBehaviour
 {
     public void Jugar()
     {
-        Debug.Log("CLICK FUNCIONA");
         SceneManager.LoadScene("Intro");
     }
 

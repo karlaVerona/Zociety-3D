@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class FPSController : MonoBehaviour
 {
@@ -10,7 +12,8 @@ public class FPSController : MonoBehaviour
 
     [Header("Camara")]
     public Transform cameraHolder;
-    public float sensibilidad = 2f;
+    public float sensibilidadMouse = 1.5f;
+    public float sensibilidadFlechas = 2f;
     public float limiteVertical = 80f;
 
     private CharacterController cc;
@@ -18,12 +21,19 @@ public class FPSController : MonoBehaviour
     private float rotacionX = 0f;
     private bool estaEnSuelo;
 
-    void Start()
-    {
-        cc = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
+
+void Start()
+{
+    cc = GetComponent<CharacterController>();
+    
+    if (SceneManager.GetActiveScene().name == "Intro")
+        rotacionX = -80f;
+    else
+        rotacionX = 0f;
+        
+    Cursor.lockState = CursorLockMode.Locked;
+    Cursor.visible = false;
+}
 
     void Update()
     {
@@ -52,22 +62,54 @@ public class FPSController : MonoBehaviour
         cc.Move(velocidadVertical * Time.deltaTime);
     }
 
-void Rotar()
+    void Rotar()
+    {
+        // Input del mouse
+        float mouseX = Input.GetAxis("Mouse X") * sensibilidadMouse;
+        float mouseY = Input.GetAxis("Mouse Y") * sensibilidadMouse;
+
+        // Input de flechas
+        float flechaX = 0f;
+        float flechaY = 0f;
+
+        if (Input.GetKey(KeyCode.RightArrow)) flechaX += sensibilidadFlechas * 2f;
+        if (Input.GetKey(KeyCode.LeftArrow)) flechaX -= sensibilidadFlechas * 2f;
+        if (Input.GetKey(KeyCode.UpArrow)) flechaY += sensibilidadFlechas * 2f;
+        if (Input.GetKey(KeyCode.DownArrow)) flechaY -= sensibilidadFlechas * 2f;
+
+        // Combinar ambos inputs
+        float rotY = mouseX + flechaX;
+        float rotX = -mouseY - flechaY;
+
+        rotacionX += rotX;
+        rotacionX = Mathf.Clamp(rotacionX, -limiteVertical, limiteVertical);
+
+        cameraHolder.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
+        transform.Rotate(Vector3.up * rotY);
+    }
+
+    public IEnumerator Levantarse()
 {
-    float rotY = 0f;
-    float rotX = 0f;
+    enabled = false; // desactiva el movimiento mientras se levanta
+    
+    float tiempoTotal = 2f;
+    float t = 0f;
+    float rotacionInicial = rotacionX; // -80 mirando al techo
+    
+    // Simula sentarse - mira al frente
+    while (t < 1f)
+    {
+        t += Time.deltaTime / tiempoTotal;
+        rotacionX = Mathf.Lerp(rotacionInicial, 0f, t);
+        cameraHolder.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
+        yield return null;
+    }
 
-    if (Input.GetKey(KeyCode.RightArrow)) rotY += sensibilidad * 2f;
-    if (Input.GetKey(KeyCode.LeftArrow)) rotY -= sensibilidad * 2f;
-    if (Input.GetKey(KeyCode.UpArrow)) rotX -= sensibilidad * 2f;
-    if (Input.GetKey(KeyCode.DownArrow)) rotX += sensibilidad * 2f;
-
-    rotacionX += rotX;
-    rotacionX = Mathf.Clamp(rotacionX, -limiteVertical, limiteVertical);
-
-    cameraHolder.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
-    transform.Rotate(Vector3.up * rotY);
+    enabled = true; // reactiva el movimiento
 }
 
-
+public void IniciarLevantarse()
+{
+    StartCoroutine(Levantarse());
+}
 }
